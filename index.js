@@ -1,3 +1,4 @@
+// index.js
 require('dotenv').config();
 const { Telegraf, session } = require('telegraf');
 const mongoose = require('mongoose');
@@ -6,7 +7,7 @@ const connectDB = require('./config/database');
 
 // Controllers
 const BotController = require('./controllers/BotController');
-const AdminController = require('./controllers/adminController');
+const AdminController = require('./controllers/AdminController');
 const PaymentController = require('./controllers/PaymentController');
 const OrderController = require('./controllers/OrderController');
 
@@ -15,6 +16,9 @@ const errorHandler = require('./middlewares/errorHandler');
 const rateLimiter = require('./middlewares/rateLimiter');
 const sessionHandler = require('./middlewares/sessionHandler');
 const securityMiddleware = require('./middlewares/securityMiddleware');
+
+// Services
+const ConversationService = require('./services/ConversationService');
 
 class TelegramShopBot {
     constructor() {
@@ -33,6 +37,9 @@ class TelegramShopBot {
 
             // Initialisation des contrôleurs
             this.setupControllers();
+
+            // Configuration de la commande setup
+            this.setupAdminCommands();
 
             // Gestion des erreurs globale
             this.setupErrorHandling();
@@ -72,6 +79,45 @@ class TelegramShopBot {
         this.orderController.startPeriodicTasks();
 
         logger.info('Contrôleurs initialisés');
+    }
+
+    setupAdminCommands() {
+        // Commande de configuration initiale
+        this.bot.command('setup', async (ctx) => {
+            if (!ctx.from.id === parseInt(process.env.ADMIN_ID)) {
+                return ctx.reply('❌ Commande réservée aux administrateurs');
+            }
+
+            try {
+                // Créer le canal principal s'il n'existe pas
+                const mainChannel = await ctx.telegram.createChannel(
+                    'ChangerShop Support',
+                    'Canal de support principal'
+                );
+
+                // Sauvegarder l'ID du canal principal
+                await ConversationService.setMainChannel(mainChannel.id);
+
+                // Configurer les catégories de base
+                const categories = [
+                    'Vehicules', 'Papiers', 'Tech', 'Contact'
+                ];
+
+                for (const cat of categories) {
+                    await ConversationService.createCategoryChannel(cat);
+                }
+
+                await ctx.reply(
+                    '✅ Configuration initiale terminée!\n\n' +
+                    'Canal principal et canaux de catégories créés.'
+                );
+            } catch (error) {
+                logger.error('Erreur setup:', error);
+                await ctx.reply('❌ Erreur lors de la configuration');
+            }
+        });
+
+        logger.info('Commandes administrateur configurées');
     }
 
     setupErrorHandling() {

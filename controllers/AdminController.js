@@ -1,3 +1,4 @@
+// controllers/AdminController.js
 const { Markup } = require('telegraf');
 const logger = require('../utils/logger');
 const User = require('../models/User');
@@ -639,6 +640,126 @@ class AdminController {
     clearAdminState(ctx) {
         if (ctx.session.adminState) {
             delete ctx.session.adminState;
+        }
+    }
+     // Gestion de l'ajout d'une catégorie
+     async handleAddCategoryInput(ctx) {
+        try {
+            const { step } = ctx.session.adminState;
+
+            switch (step) {
+                case 'name':
+                    const name = ctx.message.text;
+                    const category = await Category.create({
+                        name,
+                        active: true
+                    });
+
+                    this.clearAdminState(ctx);
+                    await ctx.reply(`✅ Catégorie "${name}" créée avec succès!`);
+                    await this.showCategoryManagement(ctx);
+                    return true;
+            }
+        } catch (error) {
+            logger.error('Erreur ajout catégorie:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
+            return true;
+        }
+    }
+
+    // Gestion de la modification d'une catégorie
+    async handleEditCategoryInput(ctx) {
+        try {
+            const { step, categoryId } = ctx.session.adminState;
+            const category = await Category.findById(categoryId);
+
+            if (!category) {
+                this.clearAdminState(ctx);
+                await ctx.reply('Catégorie non trouvée');
+                return true;
+            }
+
+            switch (step) {
+                case 'name':
+                    category.name = ctx.message.text;
+                    await category.save();
+                    break;
+                
+                case 'description':
+                    category.description = ctx.message.text;
+                    await category.save();
+                    break;
+                
+                case 'order':
+                    const order = parseInt(ctx.message.text);
+                    if (isNaN(order)) {
+                        await ctx.reply('Veuillez entrer un nombre valide');
+                        return true;
+                    }
+                    category.order = order;
+                    await category.save();
+                    break;
+            }
+
+            this.clearAdminState(ctx);
+            await ctx.reply('✅ Catégorie mise à jour avec succès!');
+            await this.showCategoryManagement(ctx);
+            return true;
+
+        } catch (error) {
+            logger.error('Erreur modification catégorie:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
+            return true;
+        }
+    }
+
+    // Confirmation de suppression d'une catégorie
+    async confirmDeleteCategory(ctx) {
+        try {
+            if (!await this.isAdmin(ctx)) return;
+
+            const categoryId = ctx.match[1];
+            const category = await Category.findById(categoryId);
+
+            if (!category) {
+                return ctx.reply('Catégorie non trouvée');
+            }
+
+            const keyboard = Markup.inlineKeyboard([
+                [
+                    Markup.button.callback('✅ Confirmer', `delete_category_confirm_${categoryId}`),
+                    Markup.button.callback('❌ Annuler', 'admin_categories')
+                ]
+            ]);
+
+            await ctx.reply(
+                `⚠️ Êtes-vous sûr de vouloir supprimer la catégorie "${category.name}" ?`,
+                keyboard
+            );
+        } catch (error) {
+            logger.error('Erreur confirmation suppression:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
+        }
+    }
+
+    // Supprimer une catégorie
+    async deleteCategory(ctx) {
+        try {
+            if (!await this.isAdmin(ctx)) return;
+
+            const categoryId = ctx.match[1];
+            const category = await Category.findById(categoryId);
+
+            if (!category) {
+                return ctx.reply('Catégorie non trouvée');
+            }
+
+            await Category.deleteOne({ _id: categoryId });
+            await ctx.reply(`✅ Catégorie "${category.name}" supprimée avec succès`);
+            await this.showCategoryManagement(ctx);
+        } catch (error) {
+            logger.error('Erreur suppression catégorie:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
         }
     }
 }
