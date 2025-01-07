@@ -1,3 +1,4 @@
+// utils/i18n.js
 const logger = require('./logger');
 
 class I18n {
@@ -5,15 +6,42 @@ class I18n {
         this.translations = {};
         this.defaultLocale = 'fr';
         this.fallbackLocale = 'en';
-        this.availableLocales = ['fr', 'en'];
+        this.availableLocales = ['fr', 'en', 'es', 'de'];
         this.loadTranslations();
     }
 
-    // Charger les traductions
     loadTranslations() {
         try {
             this.translations = {
                 fr: {
+                    admin: {
+                        // Paramètres du bot
+                        botSettings: '🤖 Paramètres du Bot',
+                        currentName: '📝 Nom actuel',
+                        currentLanguage: '🌐 Langue',
+                        currentTimezone: '⏰ Fuseau horaire',
+                        currentTheme: '🎨 Thème',
+                        maintenanceMode: '🔒 Mode maintenance',
+                        version: '🔄 Version',
+                        undefined: 'Non défini',
+                        editBotName: '📝 Nom du bot',
+                        editLanguage: '🌐 Langue',
+                        editTimezone: '⏰ Fuseau horaire',
+                        editTheme: '🎨 Thème',
+                        toggleMaintenance: '🔄 Mode maintenance',
+                        viewStats: '📊 Stats bot',
+                        back: '🔙 Retour',
+                        // Messages de confirmation
+                        languageChanged: '✅ Langue modifiée en : {lang}',
+                        nameChanged: '✅ Nom du bot modifié en : {name}',
+                        timezoneChanged: '✅ Fuseau horaire modifié en : {timezone}',
+                        themeChanged: '✅ Thème modifié en : {theme}',
+                        maintenanceToggled: '✅ Mode maintenance {status}',
+                        // Messages d'erreur admin
+                        invalidCommand: '❌ Commande invalide',
+                        accessDenied: '⛔ Accès non autorisé',
+                        configError: '❌ Erreur de configuration'
+                    },
                     errors: {
                         general: 'Une erreur est survenue',
                         validation: 'Erreur de validation',
@@ -25,24 +53,30 @@ class I18n {
                         paymentFailed: 'Paiement échoué',
                         maintenance: 'Service en maintenance'
                     },
-                    success: {
-                        created: 'Créé avec succès',
-                        updated: 'Mis à jour avec succès',
-                        deleted: 'Supprimé avec succès',
-                        saved: 'Sauvegardé avec succès',
-                        sent: 'Envoyé avec succès',
-                        processed: 'Traité avec succès'
+                    common: {
+                        yes: 'Oui',
+                        no: 'Non',
+                        ok: 'OK',
+                        cancel: 'Annuler',
+                        save: 'Sauvegarder',
+                        edit: 'Modifier',
+                        delete: 'Supprimer',
+                        search: 'Rechercher',
+                        filter: 'Filtrer',
+                        loading: 'Chargement...',
+                        noResults: 'Aucun résultat',
+                        next: 'Suivant',
+                        previous: 'Précédent',
+                        confirm: 'Confirmer',
+                        selected: 'Sélectionné'
                     },
-                    validation: {
-                        required: 'Champ requis',
-                        email: 'Email invalide',
-                        password: 'Mot de passe invalide',
-                        phone: 'Numéro de téléphone invalide',
-                        date: 'Date invalide',
-                        min: 'Valeur minimale: {min}',
-                        max: 'Valeur maximale: {max}',
-                        length: 'Longueur invalide',
-                        format: 'Format invalide'
+                    cart: {
+                        empty: 'Panier vide',
+                        addItem: 'Ajouter au panier',
+                        removeItem: 'Retirer du panier',
+                        checkout: 'Commander',
+                        total: 'Total',
+                        quantity: 'Quantité'
                     },
                     orders: {
                         status: {
@@ -73,30 +107,38 @@ class I18n {
                             crypto: 'Crypto-monnaie',
                             transfer: 'Virement bancaire'
                         }
-                    },
-                    auth: {
-                        login: 'Connexion',
-                        logout: 'Déconnexion',
-                        register: 'Inscription',
-                        forgotPassword: 'Mot de passe oublié',
-                        resetPassword: 'Réinitialiser le mot de passe',
-                        changePassword: 'Changer le mot de passe'
-                    },
-                    common: {
-                        yes: 'Oui',
-                        no: 'Non',
-                        ok: 'OK',
-                        cancel: 'Annuler',
-                        save: 'Sauvegarder',
-                        edit: 'Modifier',
-                        delete: 'Supprimer',
-                        search: 'Rechercher',
-                        filter: 'Filtrer',
-                        loading: 'Chargement...',
-                        noResults: 'Aucun résultat'
                     }
                 },
+
                 en: {
+                    admin: {
+                        // Bot settings
+                        botSettings: '🤖 Bot Settings',
+                        currentName: '📝 Current name',
+                        currentLanguage: '🌐 Language',
+                        currentTimezone: '⏰ Timezone',
+                        currentTheme: '🎨 Theme',
+                        maintenanceMode: '🔒 Maintenance mode',
+                        version: '🔄 Version',
+                        undefined: 'Undefined',
+                        editBotName: '📝 Bot name',
+                        editLanguage: '🌐 Language',
+                        editTimezone: '⏰ Timezone',
+                        editTheme: '🎨 Theme',
+                        toggleMaintenance: '🔄 Maintenance mode',
+                        viewStats: '📊 Bot stats',
+                        back: '🔙 Back',
+                        // Confirmation messages
+                        languageChanged: '✅ Language changed to: {lang}',
+                        nameChanged: '✅ Bot name changed to: {name}',
+                        timezoneChanged: '✅ Timezone changed to: {timezone}',
+                        themeChanged: '✅ Theme changed to: {theme}',
+                        maintenanceToggled: '✅ Maintenance mode {status}',
+                        // Admin error messages
+                        invalidCommand: '❌ Invalid command',
+                        accessDenied: '⛔ Access denied',
+                        configError: '❌ Configuration error'
+                    },
                     errors: {
                         general: 'An error occurred',
                         validation: 'Validation error',
@@ -108,24 +150,30 @@ class I18n {
                         paymentFailed: 'Payment failed',
                         maintenance: 'Service under maintenance'
                     },
-                    success: {
-                        created: 'Successfully created',
-                        updated: 'Successfully updated',
-                        deleted: 'Successfully deleted',
-                        saved: 'Successfully saved',
-                        sent: 'Successfully sent',
-                        processed: 'Successfully processed'
+                    common: {
+                        yes: 'Yes',
+                        no: 'No',
+                        ok: 'OK',
+                        cancel: 'Cancel',
+                        save: 'Save',
+                        edit: 'Edit',
+                        delete: 'Delete',
+                        search: 'Search',
+                        filter: 'Filter',
+                        loading: 'Loading...',
+                        noResults: 'No results',
+                        next: 'Next',
+                        previous: 'Previous',
+                        confirm: 'Confirm',
+                        selected: 'Selected'
                     },
-                    validation: {
-                        required: 'Field required',
-                        email: 'Invalid email',
-                        password: 'Invalid password',
-                        phone: 'Invalid phone number',
-                        date: 'Invalid date',
-                        min: 'Minimum value: {min}',
-                        max: 'Maximum value: {max}',
-                        length: 'Invalid length',
-                        format: 'Invalid format'
+                    cart: {
+                        empty: 'Cart empty',
+                        addItem: 'Add to cart',
+                        removeItem: 'Remove from cart',
+                        checkout: 'Checkout',
+                        total: 'Total',
+                        quantity: 'Quantity'
                     },
                     orders: {
                         status: {
@@ -156,36 +204,209 @@ class I18n {
                             crypto: 'Cryptocurrency',
                             transfer: 'Bank transfer'
                         }
+                    }
+                },
+
+                es: {
+                    admin: {
+                        // Configuración del bot
+                        botSettings: '🤖 Configuración del Bot',
+                        currentName: '📝 Nombre actual',
+                        currentLanguage: '🌐 Idioma',
+                        currentTimezone: '⏰ Zona horaria',
+                        currentTheme: '🎨 Tema',
+                        maintenanceMode: '🔒 Modo mantenimiento',
+                        version: '🔄 Versión',
+                        undefined: 'No definido',
+                        editBotName: '📝 Nombre del bot',
+                        editLanguage: '🌐 Idioma',
+                        editTimezone: '⏰ Zona horaria',
+                        editTheme: '🎨 Tema',
+                        toggleMaintenance: '🔄 Modo mantenimiento',
+                        viewStats: '📊 Estadísticas',
+                        back: '🔙 Volver',
+                        // Mensajes de confirmación
+                        languageChanged: '✅ Idioma cambiado a: {lang}',
+                        nameChanged: '✅ Nombre del bot cambiado a: {name}',
+                        timezoneChanged: '✅ Zona horaria cambiada a: {timezone}',
+                        themeChanged: '✅ Tema cambiado a: {theme}',
+                        maintenanceToggled: '✅ Modo mantenimiento {status}',
+                        // Mensajes de error de administración
+                        invalidCommand: '❌ Comando inválido',
+                        accessDenied: '⛔ Acceso denegado',
+                        configError: '❌ Error de configuración'
                     },
-                    auth: {
-                        login: 'Login',
-                        logout: 'Logout',
-                        register: 'Register',
-                        forgotPassword: 'Forgot password',
-                        resetPassword: 'Reset password',
-                        changePassword: 'Change password'
+                    errors: {
+                        general: 'Ha ocurrido un error',
+                        validation: 'Error de validación',
+                        notFound: 'No encontrado',
+                        unauthorized: 'No autorizado',
+                        forbidden: 'Acceso prohibido',
+                        fileNotFound: 'Archivo no encontrado',
+                        invalidFormat: 'Formato inválido',
+                        paymentFailed: 'Pago fallido',
+                        maintenance: 'Servicio en mantenimiento'
                     },
                     common: {
-                        yes: 'Yes',
+                        yes: 'Sí',
                         no: 'No',
                         ok: 'OK',
-                        cancel: 'Cancel',
-                        save: 'Save',
-                        edit: 'Edit',
-                        delete: 'Delete',
-                        search: 'Search',
-                        filter: 'Filter',
-                        loading: 'Loading...',
-                        noResults: 'No results'
+                        cancel: 'Cancelar',
+                        save: 'Guardar',
+                        edit: 'Editar',
+                        delete: 'Eliminar',
+                        search: 'Buscar',
+                        filter: 'Filtrar',
+                        loading: 'Cargando...',
+                        noResults: 'Sin resultados',
+                        next: 'Siguiente',
+                        previous: 'Anterior',
+                        confirm: 'Confirmar',
+                        selected: 'Seleccionado'
+                    },
+                    cart: {
+                        empty: 'Carrito vacío',
+                        addItem: 'Añadir al carrito',
+                        removeItem: 'Quitar del carrito',
+                        checkout: 'Comprar',
+                        total: 'Total',
+                        quantity: 'Cantidad'
+                    },
+                    orders: {
+                        status: {
+                            pending: 'Pendiente',
+                            processing: 'Procesando',
+                            completed: 'Completado',
+                            cancelled: 'Cancelado',
+                            refunded: 'Reembolsado'
+                        },
+                        actions: {
+                            create: 'Crear pedido',
+                            view: 'Ver pedido',
+                            cancel: 'Cancelar pedido',
+                            refund: 'Reembolsar pedido'
+                        }
+                    },
+                    payments: {
+                        status: {
+                            pending: 'Pendiente',
+                            processing: 'Procesando',
+                            completed: 'Completado',
+                            failed: 'Fallido',
+                            refunded: 'Reembolsado'
+                        },
+                        methods: {
+                            card: 'Tarjeta de crédito',
+                            paypal: 'PayPal',
+                            crypto: 'Criptomoneda',
+                            transfer: 'Transferencia bancaria'
+                        }
+                    }
+                },
+
+                de: {
+                    admin: {
+                        // Bot-Einstellungen
+                        botSettings: '🤖 Bot-Einstellungen',
+                        currentName: '📝 Aktueller Name',
+                        currentLanguage: '🌐 Sprache',
+                        currentTimezone: '⏰ Zeitzone',
+                        currentTheme: '🎨 Theme',
+                        maintenanceMode: '🔒 Wartungsmodus',
+                        version: '🔄 Version',
+                        undefined: 'Nicht definiert',
+                        editBotName: '📝 Bot-Name',
+                        editLanguage: '🌐 Sprache',
+                        editTimezone: '⏰ Zeitzone',
+                        editTheme: '🎨 Theme',
+                        toggleMaintenance: '🔄 Wartungsmodus',
+                        viewStats: '📊 Statistiken',
+                        back: '🔙 Zurück',
+                        // Bestätigungsmeldungen
+                        languageChanged: '✅ Sprache geändert zu: {lang}',
+                        nameChanged: '✅ Bot-Name geändert zu: {name}',
+                        timezoneChanged: '✅ Zeitzone geändert zu: {timezone}',
+                        themeChanged: '✅ Theme geändert zu: {theme}',
+                        maintenanceToggled: '✅ Wartungsmodus {status}',
+                        // Admin-Fehlermeldungen
+                        invalidCommand: '❌ Ungültiger Befehl',
+                        accessDenied: '⛔ Zugriff verweigert',
+                        configError: '❌ Konfigurationsfehler'
+                    },
+                    errors: {
+                        general: 'Ein Fehler ist aufgetreten',
+                        validation: 'Validierungsfehler',
+                        notFound: 'Nicht gefunden',
+                        unauthorized: 'Nicht autorisiert',
+                        forbidden: 'Zugriff verboten',
+                        fileNotFound: 'Datei nicht gefunden',
+                        invalidFormat: 'Ungültiges Format',
+                        paymentFailed: 'Zahlung fehlgeschlagen',
+                        maintenance: 'Service in Wartung'
+                    },
+                    common: {
+                        yes: 'Ja',
+                        no: 'Nein',
+                        ok: 'OK',
+                        cancel: 'Abbrechen',
+                        save: 'Speichern',
+                        edit: 'Bearbeiten',
+                        delete: 'Löschen',
+                        search: 'Suchen',
+                        filter: 'Filtern',
+                        loading: 'Lädt...',
+                        noResults: 'Keine Ergebnisse',
+                        next: 'Weiter',
+                        previous: 'Zurück',
+                        confirm: 'Bestätigen',
+                        selected: 'Ausgewählt'
+                    },
+                    cart: {
+                        empty: 'Warenkorb leer',
+                        addItem: 'In den Warenkorb',
+                        removeItem: 'Aus dem Warenkorb entfernen',
+                        checkout: 'Zur Kasse',
+                        total: 'Gesamt',
+                        quantity: 'Menge'
+                    },
+                    orders: {
+                        status: {
+                            pending: 'Ausstehend',
+                            processing: 'In Bearbeitung',
+                            completed: 'Abgeschlossen',
+                            cancelled: 'Storniert',
+                            refunded: 'Erstattet'
+                        },
+                        actions: {
+                            create: 'Bestellung erstellen',
+                            view: 'Bestellung ansehen',
+                            cancel: 'Bestellung stornieren',
+                            refund: 'Bestellung erstatten'
+                        }
+                    },
+                    payments: {
+                        status: {
+                            pending: 'Ausstehend',
+                            processing: 'In Bearbeitung',
+                            completed: 'Abgeschlossen',
+                            failed: 'Fehlgeschlagen',
+                            refunded: 'Erstattet'
+                        },
+                        methods: {
+                            card: 'Kreditkarte',
+                            paypal: 'PayPal',
+                            crypto: 'Kryptowährung',
+                            transfer: 'Überweisung'
+                        }
                     }
                 }
             };
+            logger.info('Traductions chargées avec succès');
         } catch (error) {
             logger.error('Erreur lors du chargement des traductions:', error);
         }
     }
 
-    // Traduire une clé
     t(key, vars = {}, locale = this.defaultLocale) {
         try {
             // Vérifier que la locale est disponible
@@ -225,16 +446,15 @@ class I18n {
         }
     }
 
-    // Définir la locale par défaut
     setDefaultLocale(locale) {
         if (this.availableLocales.includes(locale)) {
             this.defaultLocale = locale;
+            logger.info(`Langue par défaut changée pour: ${locale}`);
         } else {
-            logger.warn('Locale non disponible:', locale);
+            logger.warn('Langue non disponible:', locale);
         }
     }
 
-    // Ajouter une nouvelle locale
     addLocale(locale, translations) {
         try {
             if (!locale || typeof locale !== 'string') {
@@ -250,18 +470,16 @@ class I18n {
                 this.availableLocales.push(locale);
             }
 
-            logger.info('Nouvelle locale ajoutée:', locale);
+            logger.info('Nouvelle langue ajoutée:', locale);
         } catch (error) {
-            logger.error('Erreur lors de l\'ajout de la locale:', error);
+            logger.error('Erreur lors de l\'ajout de la langue:', error);
         }
     }
 
-    // Obtenir les traductions pour une locale
     getTranslations(locale = this.defaultLocale) {
         return this.translations[locale] || {};
     }
 
-    // Formater une date selon la locale
     formatDate(date, options = {}) {
         try {
             const locale = options.locale || this.defaultLocale;
@@ -272,7 +490,6 @@ class I18n {
         }
     }
 
-    // Formater un nombre selon la locale
     formatNumber(number, options = {}) {
         try {
             const locale = options.locale || this.defaultLocale;
@@ -283,7 +500,6 @@ class I18n {
         }
     }
 
-    // Formater une devise selon la locale
     formatCurrency(amount, currency = 'EUR', locale = this.defaultLocale) {
         try {
             return new Intl.NumberFormat(locale, {
@@ -296,7 +512,6 @@ class I18n {
         }
     }
 
-    // Obtenir la direction d'écriture pour une locale
     getTextDirection(locale = this.defaultLocale) {
         const rtlLocales = ['ar', 'he', 'fa'];
         return rtlLocales.includes(locale) ? 'rtl' : 'ltr';

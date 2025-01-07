@@ -55,30 +55,70 @@ class TelegramShopBot {
     }
 
     setupMiddlewares() {
+        // Middleware de debug pour logger toutes les updates
+        this.bot.use(async (ctx, next) => {
+            const updateType = ctx.updateType;
+            logger.debug('Update reçue:', {
+                type: updateType,
+                from: ctx.from,
+                chat: ctx.chat,
+                channelPost: ctx.channelPost,
+                message: ctx.message,
+                callbackQuery: ctx.callbackQuery
+            });
+            return next();
+        });
+    
         // Session middleware
-        this.bot.use(session());
+        this.bot.use(session({
+            defaultSession: () => ({
+                adminState: null,
+                lastActivity: new Date()
+            })
+        }));
         this.bot.use(sessionHandler);
-
+    
         // Rate limiting
         this.bot.use(rateLimiter);
-
+    
         // Sécurité
         this.bot.use(securityMiddleware);
-
+    
         logger.info('Middlewares configurés');
     }
 
     setupControllers() {
-        // Initialiser les contrôleurs
-        this.botController = new BotController(this.bot);
-        this.adminController = new AdminController(this.bot);
-        this.paymentController = new PaymentController(this.bot);
-        this.orderController = new OrderController(this.bot);
-
-        // Démarrer les tâches périodiques
-        this.orderController.startPeriodicTasks();
-
-        logger.info('Contrôleurs initialisés');
+        try {
+            // Initialiser les contrôleurs
+            this.botController = new BotController(this.bot);
+            logger.info('BotController initialisé');
+    
+            this.adminController = new AdminController(this.bot);
+            logger.info('AdminController initialisé');
+    
+            this.paymentController = new PaymentController(this.bot);
+            logger.info('PaymentController initialisé');
+    
+            this.orderController = new OrderController(this.bot);
+            logger.info('OrderController initialisé');
+    
+            // Démarrer les tâches périodiques
+            this.orderController.startPeriodicTasks();
+    
+            // Vérifier que les commandes sont bien enregistrées
+            const commands = this.bot.telegram.getMyCommands()
+                .then(commands => {
+                    logger.info('Commandes enregistrées:', commands);
+                })
+                .catch(error => {
+                    logger.error('Erreur lors de la récupération des commandes:', error);
+                });
+    
+            logger.info('Contrôleurs initialisés avec succès');
+        } catch (error) {
+            logger.error('Erreur lors de l\'initialisation des contrôleurs:', error);
+            throw error;
+        }
     }
 
     setupAdminCommands() {
@@ -121,20 +161,47 @@ class TelegramShopBot {
     }
 
     setupErrorHandling() {
+    try {
         // Middleware de gestion des erreurs
         this.bot.use(errorHandler);
 
-        // Gestion des erreurs non capturées
-        process.on('uncaughtException', (error) => {
-            logger.error('Erreur non capturée:', error);
+        // Gestionnaire d'erreurs global pour le bot
+        this.bot.catch((err, ctx) => {
+            logger.error('Erreur globale bot:', {
+                error: err,
+                context: {
+                    updateType: ctx?.updateType,
+                    update: ctx?.update,
+                    from: ctx?.from,
+                    chat: ctx?.chat,
+                    channelPost: ctx?.channelPost
+                }
+            });
         });
 
-        process.on('unhandledRejection', (error) => {
-            logger.error('Promesse rejetée non gérée:', error);
+        // Gestion des erreurs non capturées
+        process.on('uncaughtException', (error) => {
+            logger.error('Erreur non capturée:', {
+                error: {
+                    name: error.name,
+                    message: error.message,
+                    stack: error.stack
+                }
+            });
+        });
+
+        process.on('unhandledRejection', (reason, promise) => {
+            logger.error('Promesse rejetée non gérée:', {
+                reason: reason,
+                promise: promise
+            });
         });
 
         logger.info('Gestion des erreurs configurée');
+    } catch (error) {
+        logger.error('Erreur lors de la configuration de la gestion des erreurs:', error);
     }
+}
 
     async startBot() {
         // Configurer le webhook en production
@@ -172,6 +239,8 @@ class TelegramShopBot {
                 process.exit(1);
             }
         };
+
+ 
 
         // Écouter les signaux d'arrêt
         process.once('SIGINT', () => gracefulShutdown('SIGINT'));

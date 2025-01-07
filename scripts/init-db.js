@@ -1,62 +1,76 @@
-// scripts/init-db.js
 require('dotenv').config();
 const mongoose = require('mongoose');
 const logger = require('../utils/logger');
 
-// Importer tous les modèles
-const User = require('../models/User');
-const Category = require('../models/Category');
-const Product = require('../models/Product');
-const Order = require('../models/Order');
-const Conversation = require('../models/Conversation');
-
-async function dropIndexes() {
-    try {
-        // Supprimer tous les indexes existants sauf _id
-        await User.collection.dropIndexes();
-        await Category.collection.dropIndexes();
-        await Product.collection.dropIndexes();
-        await Order.collection.dropIndexes();
-        await Conversation.collection.dropIndexes();
-        logger.info('✅ Indexes supprimés');
-    } catch (error) {
-        logger.warn('⚠️ Erreur lors de la suppression des indexes (normal pour la première exécution)');
-    }
-}
-
 async function initializeDatabase() {
     try {
         // Connexion à MongoDB
-        await mongoose.connect(process.env.MONGODB_URI, {
-            // Retirer les options dépréciées
-            autoIndex: true,
-            serverSelectionTimeoutMS: 5000,
-            socketTimeoutMS: 45000,
-            maxPoolSize: 50
-        });
+        await mongoose.connect(process.env.MONGODB_URI);
         logger.info('✅ Connecté à MongoDB');
 
-        // Supprimer les indexes existants
-        await dropIndexes();
+        // Supprimer TOUS les index de toutes les collections
+        const collections = Object.keys(mongoose.connection.collections);
+        for (const collectionName of collections) {
+            try {
+                await mongoose.connection.collections[collectionName].dropIndexes();
+            } catch (error) {
+                // Ignorer les erreurs de drop index pour les nouvelles collections
+                if (error.code !== 26) {
+                    logger.warn(`⚠️ Warning dropping indexes for ${collectionName}:`, error.message);
+                }
+            }
+        }
+        logger.info('✅ Tous les index ont été supprimés');
 
-        // Recréer les indexes
-        await Promise.all([
-            User.createIndexes(),
-            Category.createIndexes(),
-            Product.createIndexes(),
-            Order.createIndexes(),
-            Conversation.createIndexes()
-        ]);
-        logger.info('✅ Indexes recréés');
+        // Créer les indexes un par un
+        const User = require('../models/User');
+        const Category = require('../models/Category');
+        const Product = require('../models/Product');
+        const Order = require('../models/Order');
+        const Conversation = require('../models/Conversation');
 
-        // Créer les catégories par défaut
-        const defaultCategories = ['Vehicules', 'Papiers', 'Tech', 'Contact'];
-        for (const catName of defaultCategories) {
-            await Category.findOneAndUpdate(
-                { name: catName },
-                { name: catName, active: true },
-                { upsert: true, new: true }
-            );
+        await User.collection.createIndex({ telegramId: 1 }, { unique: true });
+        await User.collection.createIndex({ username: 1 });
+        await Order.collection.createIndex({ orderNumber: 1 }, { unique: true });
+        await Order.collection.createIndex({ 'user.id': 1 });
+        await Conversation.collection.createIndex({ orderId: 1 }, { unique: true });
+        await Conversation.collection.createIndex({ channelId: 1 }, { unique: true });
+
+        logger.info('✅ Nouveaux index créés');
+
+        // Nettoyer la collection des catégories
+        await Category.deleteMany({});
+
+        // Créer les catégories par défaut avec descriptions et slugs
+        const defaultCategories = [
+            {
+                name: 'Vehicules',
+                description: 'Tous types de véhicules et moyens de transport',
+                slug: 'vehicules',
+                active: true
+            },
+            {
+                name: 'Papiers',
+                description: 'Services et documents administratifs',
+                slug: 'papiers',
+                active: true
+            },
+            {
+                name: 'Tech',
+                description: 'Produits et services technologiques',
+                slug: 'tech',
+                active: true
+            },
+            {
+                name: 'Contact',
+                description: 'Moyens de contact et support',
+                slug: 'contact',
+                active: true
+            }
+        ];
+
+        for (const catData of defaultCategories) {
+            await Category.create(catData);
         }
         logger.info('✅ Catégories par défaut créées');
 
@@ -73,11 +87,9 @@ async function initializeDatabase() {
                 { upsert: true, new: true }
             );
             logger.info('✅ Admin par défaut créé');
-        } else {
-            logger.warn('⚠️ ADMIN_ID non défini dans .env');
         }
 
-        logger.info('✅ Initialisation terminée');
+        logger.info('✅ Initialisation réussie');
         process.exit(0);
     } catch (error) {
         logger.error('❌ Erreur lors de l\'initialisation:', error);

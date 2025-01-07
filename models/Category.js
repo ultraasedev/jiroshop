@@ -15,8 +15,10 @@ const categorySchema = new mongoose.Schema({
     },
     slug: {
         type: String,
+        required: [true, 'Le slug est requis'],
         unique: true,
-        lowercase: true
+        lowercase: true,
+        trim: true
     },
     parent: {
         type: mongoose.Schema.Types.ObjectId,
@@ -46,10 +48,35 @@ const categorySchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Middleware pre-save pour générer le slug
-categorySchema.pre('save', function(next) {
-    if (this.isModified('name')) {
+// Middleware pre-validate pour s'assurer qu'un slug est généré
+categorySchema.pre('validate', function(next) {
+    if (!this.slug && this.name) {
         this.slug = this.name
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+    }
+    next();
+});
+
+// Middleware pre-save pour maintenir le slug à jour
+categorySchema.pre('save', function(next) {
+    if (this.isModified('name') && !this.isModified('slug')) {
+        this.slug = this.name
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+    }
+    next();
+});
+
+// Middleware pre-update pour maintenir le slug lors des mises à jour
+categorySchema.pre('findOneAndUpdate', function(next) {
+    const update = this.getUpdate();
+    if (update.name && !update.slug) {
+        update.slug = update.name
             .toLowerCase()
             .replace(/[^a-z0-9]/g, '-')
             .replace(/-+/g, '-')
@@ -89,6 +116,25 @@ categorySchema.methods.getSubcategories = async function() {
 
 // Index composé pour l'ordre et le parent
 categorySchema.index({ parent: 1, order: 1 });
+
+// Fonction pour générer un slug unique si nécessaire
+categorySchema.statics.generateUniqueSlug = async function(name, suffix = '') {
+    try {
+        const baseSlug = name
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '') + suffix;
+            
+        const exists = await this.findOne({ slug: baseSlug });
+        if (!exists) return baseSlug;
+
+        return this.generateUniqueSlug(name, `-${Math.floor(Math.random() * 1000)}`);
+    } catch (error) {
+        logger.error('Erreur lors de la génération du slug unique:', error);
+        throw error;
+    }
+};
 
 const Category = mongoose.model('Category', categorySchema);
 

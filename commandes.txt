@@ -1,0 +1,106 @@
+=== INSTRUCTIONS DE TEST DU BOT ===
+
+1. CONFIGURATION INITIALE
+------------------------
+/start - Démarrer le bot et voir le menu principal
+/setup - Initialiser les canaux et catégories (Admin uniquement)
+
+2. COMMANDES UTILISATEUR
+-----------------------
+/menu - Afficher le menu principal
+/cart - Voir votre panier
+/orders - Voir vos commandes
+/help - Obtenir de l'aide
+
+3. PROCESSUS D'ACHAT
+-------------------
+1. Aller dans une catégorie de produits
+2. Sélectionner un produit
+3. Cliquer sur "Ajouter au panier"
+4. Voir le panier avec /cart
+5. Cliquer sur "Commander"
+6. Choisir le mode de paiement
+7. Envoyer une preuve de paiement (photo/document)
+
+4. COMMANDES ADMIN
+-----------------
+/admin - Accéder au panel admin
+Ensuite tester :
+- Gestion des catégories
+- Gestion des produits
+- Gestion des commandes
+- Gestion des paiements
+
+5. SÉQUENCE DE TEST COMPLÈTE
+---------------------------
+1. ADMIN : Initialisation
+   - /setup
+   - Vérifier la création des canaux
+   - Ajouter quelques produits
+
+2. CLIENT : Commande test
+   - /start
+   - Parcourir les catégories
+   - Ajouter un produit au panier
+   - Voir le panier (/cart)
+   - Commander
+   - Envoyer une preuve de paiement
+
+3. ADMIN : Traitement
+   - Vérifier la nouvelle commande
+   - Confirmer le paiement
+   - Marquer comme en cours
+   - Marquer comme livré
+
+4. CLIENT : Finalisation
+   - Confirmer la réception
+   - Vérifier l'historique (/orders)
+
+6. TEST DES ERREURS
+------------------
+- Essayer d'ajouter un produit sans catégorie
+- Commande avec panier vide
+- Paiement sans preuve
+- Commandes avec données manquantes
+
+7. VÉRIFICATIONS DE SÉCURITÉ
+---------------------------
+- Tentative d'accès admin avec compte normal
+- Commandes dans mauvais ordre
+- Actions non autorisées
+
+=== POINTS À VÉRIFIER ===
+
+✓ Création des canaux et catégories
+✓ Ajout de produits
+✓ Processus de commande
+✓ Système de paiement
+✓ Notifications
+✓ Gestion des erreurs
+✓ Réponses appropriées
+✓ Sécurité des commandes admin
+✓ Messages dans les canaux
+✓ Changements de statut
+
+=== REMARQUES IMPORTANTES ===
+
+- Gardez votre token bot privé
+- Testez d'abord en environnement de développement
+- Vérifiez les logs pour les erreurs
+- Testez avec plusieurs utilisateurs
+- Vérifiez les permissions des canaux
+
+=== DEBUGGAGE ===
+
+Si le bot ne répond pas :
+1. Vérifier que le bot est lancé
+2. Vérifier les logs d'erreur
+3. Vérifier la connexion MongoDB
+4. Vérifier le token du bot
+5. Vérifier les permissions Telegram
+
+En cas d'erreur :
+1. Noter le message d'erreur complet
+2. Vérifier les logs dans /logs
+3. Vérifier la dernière action effectuée
+4. Redémarrer le bot si nécessaire

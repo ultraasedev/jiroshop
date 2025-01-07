@@ -1,0 +1,621 @@
+// AdminController.js
+const { Markup } = require('telegraf');
+const logger = require('../utils/logger');
+const User = require('../models/User');
+const Category = require('../models/Category');
+const Product = require('../models/Product');
+const Order = require('../models/Order');
+const PaymentMethod = require('../models/PaymentMethod');
+const AdminLog = require('../models/AdminLog');
+const Config = require('../models/Config');
+const fs = require('fs').promises;
+const path = require('path');
+
+class AdminController {
+    constructor(bot) {
+        if (!bot) {
+            throw new Error('Bot instance is required');
+        }
+        this.bot = bot;
+        this.initializeAdminCommands();
+    }
+
+    initializeAdminCommands() {
+        // Panel admin principal
+        this.bot.command('admin', (ctx) => this.showAdminPanel(ctx));
+        this.bot.action('admin_panel', (ctx) => this.showAdminPanel(ctx));
+
+        // Gestion des catégories
+        this.bot.action('admin_categories', (ctx) => this.showCategoryManagement(ctx));
+        this.bot.action('add_category', (ctx) => this.startAddCategory(ctx));
+        this.bot.action(/^edit_category_(.+)$/, (ctx) => this.startEditCategory(ctx));
+        this.bot.action(/^delete_category_(.+)$/, (ctx) => this.confirmDeleteCategory(ctx));
+        this.bot.action(/^delete_category_confirm_(.+)$/, (ctx) => this.deleteCategory(ctx));
+        this.bot.action(/^edit_category_name_(.+)$/, (ctx) => this.editCategoryName(ctx));
+        this.bot.action(/^edit_category_desc_(.+)$/, (ctx) => this.editCategoryDescription(ctx));
+        this.bot.action(/^edit_category_image_(.+)$/, (ctx) => this.editCategoryImage(ctx));
+        this.bot.action(/^edit_category_order_(.+)$/, (ctx) => this.editCategoryOrder(ctx));
+
+        // Gestion des produits
+        this.bot.action('admin_products', (ctx) => this.showProductManagement(ctx));
+        this.bot.action('add_product', (ctx) => this.startAddProduct(ctx));
+        this.bot.action(/^edit_product_(.+)$/, (ctx) => this.startEditProduct(ctx));
+        this.bot.action(/^delete_product_(.+)$/, (ctx) => this.confirmDeleteProduct(ctx));
+        this.bot.action(/^delete_product_confirm_(.+)$/, (ctx) => this.deleteProduct(ctx));
+        this.bot.action('search_products', (ctx) => this.searchProducts(ctx));
+
+        // Gestion des paiements
+        this.bot.action('admin_payments', (ctx) => this.showPaymentManagement(ctx));
+        this.bot.action('add_payment_method', (ctx) => this.startAddPaymentMethod(ctx));
+        this.bot.action(/^edit_payment_(.+)$/, (ctx) => this.startEditPaymentMethod(ctx));
+        this.bot.action(/^delete_payment_(.+)$/, (ctx) => this.confirmDeletePaymentMethod(ctx));
+        this.bot.action(/^toggle_payment_(.+)$/, (ctx) => this.togglePaymentMethod(ctx));
+        this.bot.action(/^edit_payment_fees_(.+)$/, (ctx) => this.editPaymentFees(ctx));
+        this.bot.action(/^edit_payment_config_(.+)$/, (ctx) => this.editPaymentConfig(ctx));
+
+        // Gestion des commandes
+        this.bot.action('admin_orders', (ctx) => this.showOrderManagement(ctx));
+        this.bot.action(/^view_order_(.+)$/, (ctx) => this.viewOrder(ctx));
+        this.bot.action(/^approve_order_(.+)$/, (ctx) => this.approveOrder(ctx));
+        this.bot.action(/^reject_order_(.+)$/, (ctx) => this.rejectOrder(ctx));
+        this.bot.action('search_orders', (ctx) => this.searchOrders(ctx));
+        this.bot.action('order_stats', (ctx) => this.showOrderStats(ctx));
+
+        // Configuration générale
+        this.bot.action('admin_config', (ctx) => this.showAdminConfig(ctx));
+        this.bot.action('edit_bot_settings', (ctx) => this.editBotSettings(ctx));
+        this.bot.action('edit_security_settings', (ctx) => this.editSecuritySettings(ctx));
+        this.bot.action('edit_notification_settings', (ctx) => this.editNotificationSettings(ctx));
+        this.bot.action('edit_payment_settings', (ctx) => this.editPaymentSettings(ctx));
+        this.bot.action('manage_backup', (ctx) => this.manageBackup(ctx));
+        this.bot.action('view_logs', (ctx) => this.viewLogs(ctx));
+        this.bot.action('manage_admin_roles', (ctx) => this.manageAdminRoles(ctx));
+        this.bot.action('manage_api_settings', (ctx) => this.manageApiSettings(ctx));
+
+        // Sous-actions pour les paramètres du bot
+        this.bot.action('edit_bot_name', (ctx) => this.editBotName(ctx));
+        this.bot.action('edit_bot_description', (ctx) => this.editBotDescription(ctx));
+        this.bot.action('edit_bot_language', (ctx) => this.editBotLanguage(ctx));
+        this.bot.action('edit_bot_timezone', (ctx) => this.editBotTimezone(ctx));
+        this.bot.action('edit_bot_automessages', (ctx) => this.editBotAutomessages(ctx));
+        this.bot.action('edit_bot_appearance', (ctx) => this.editBotAppearance(ctx));
+
+        // Autres actions admin
+        this.bot.action(/^mark_delivered_(.+)$/, (ctx) => this.markOrderAsDelivered(ctx));
+        this.bot.action(/^complete_order_(.+)$/, (ctx) => this.completeOrder(ctx));
+        this.bot.action(/^cancel_order_(.+)$/, (ctx) => this.cancelOrder(ctx));
+        this.bot.action(/^refund_order_(.+)$/, (ctx) => this.refundOrder(ctx));
+        this.bot.action(/^approve_payment_(.+)$/, (ctx) => this.approvePayment(ctx));
+        this.bot.action(/^reject_payment_(.+)$/, (ctx) => this.rejectPayment(ctx));
+        this.bot.action(/^verify_payment_(.+)$/, (ctx) => this.verifyPayment(ctx));
+
+        // Gestion des utilisateurs
+        this.bot.action('admin_users', (ctx) => this.showUserManagement(ctx));
+        this.bot.action(/^view_user_(.+)$/, (ctx) => this.viewUser(ctx));
+        this.bot.action(/^ban_user_(.+)$/, (ctx) => this.banUser(ctx));
+        this.bot.action(/^unban_user_(.+)$/, (ctx) => this.unbanUser(ctx));
+        this.bot.action('search_users', (ctx) => this.searchUsers(ctx));
+        this.bot.action('user_stats', (ctx) => this.showUserStats(ctx));
+    }
+
+    // Vérification des permissions admin
+    async isAdmin(ctx) {
+        try {
+            const user = await User.findOne({ telegramId: ctx.from.id });
+            return user && (user.role === 'admin' || user.role === 'superadmin');
+        } catch (error) {
+            logger.error('Erreur vérification admin:', error);
+            return false;
+        }
+    }
+
+    // Panel d'administration principal
+    async showAdminPanel(ctx) {
+        try {
+            if (!await this.isAdmin(ctx)) {
+                return ctx.reply('⛔ Accès non autorisé');
+            }
+
+            const keyboard = Markup.inlineKeyboard([
+                [
+                    Markup.button.callback('📦 Produits', 'admin_products'),
+                    Markup.button.callback('📑 Catégories', 'admin_categories')
+                ],
+                [
+                    Markup.button.callback('💳 Paiements', 'admin_payments'),
+                    Markup.button.callback('📦 Commandes', 'admin_orders')
+                ],
+                [
+                    Markup.button.callback('👥 Utilisateurs', 'admin_users'),
+                    Markup.button.callback('📊 Statistiques', 'admin_stats')
+                ],
+                [
+                    Markup.button.callback('⚙️ Configuration', 'admin_config')
+                ]
+            ]);
+
+            await ctx.reply('🔧 Panel Administrateur', keyboard);
+        } catch (error) {
+            logger.error('Erreur affichage panel admin:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
+        }
+    }
+
+    // Configuration administrative
+    async showAdminConfig(ctx) {
+        try {
+            if (!await this.isAdmin(ctx)) return;
+
+            const keyboard = Markup.inlineKeyboard([
+                [
+                    Markup.button.callback('⚙️ Paramètres Bot', 'edit_bot_settings'),
+                    Markup.button.callback('🔐 Sécurité', 'edit_security_settings')
+                ],
+                [
+                    Markup.button.callback('📨 Notifications', 'edit_notification_settings'),
+                    Markup.button.callback('💳 Paiements', 'edit_payment_settings')
+                ],
+                [
+                    Markup.button.callback('🔄 Backup/Restore', 'manage_backup'),
+                    Markup.button.callback('📝 Logs', 'view_logs')
+                ],
+                [
+                    Markup.button.callback('👥 Rôles Admin', 'manage_admin_roles'),
+                    Markup.button.callback('🌐 API', 'manage_api_settings')
+                ],
+                [Markup.button.callback('🔙 Retour', 'admin_panel')]
+            ]);
+
+            await ctx.reply('⚙️ Configuration Administrative', keyboard);
+        } catch (error) {
+            logger.error('Erreur affichage config admin:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
+        }
+    }
+
+    // Éditer les paramètres du bot
+    async editBotSettings(ctx) {
+        try {
+            if (!await this.isAdmin(ctx)) return;
+
+            const keyboard = Markup.inlineKeyboard([
+                [
+                    Markup.button.callback('🔤 Nom du Bot', 'edit_bot_name'),
+                    Markup.button.callback('📝 Description', 'edit_bot_description')
+                ],
+                [
+                    Markup.button.callback('🌍 Langue', 'edit_bot_language'),
+                    Markup.button.callback('⏰ Fuseau horaire', 'edit_bot_timezone')
+                ],
+                [
+                    Markup.button.callback('🔔 Messages Auto', 'edit_bot_automessages'),
+                    Markup.button.callback('🎨 Apparence', 'edit_bot_appearance')
+                ],
+                [Markup.button.callback('🔙 Retour', 'admin_config')]
+            ]);
+
+            const config = await Config.findOne() || {};
+            
+            let message = '⚙️ Paramètres actuels du Bot\n\n';
+            message += `🤖 Nom: ${config.botName || 'Non défini'}\n`;
+            message += `📝 Description: ${config.botDescription || 'Non définie'}\n`;
+            message += `🌍 Langue: ${config.language || 'FR'}\n`;
+            message += `⏰ Fuseau horaire: ${config.timezone || 'UTC+1'}\n`;
+
+            await ctx.reply(message, keyboard);
+        } catch (error) {
+            logger.error('Erreur édition paramètres bot:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
+        }
+    }
+
+    // Éditer le nom du bot
+    async editBotName(ctx) {
+        try {
+            if (!await this.isAdmin(ctx)) return;
+
+            ctx.session.adminState = {
+                action: 'edit_bot_name'
+            };
+
+            await ctx.reply('🔤 Entrez le nouveau nom du bot:');
+        } catch (error) {
+            logger.error('Erreur édition nom bot:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
+        }
+    }
+
+    // Éditer la description du bot
+    async editBotDescription(ctx) {
+        try {
+            if (!await this.isAdmin(ctx)) return;
+
+            ctx.session.adminState = {
+                action: 'edit_bot_description'
+            };
+
+            await ctx.reply('📝 Entrez la nouvelle description du bot:');
+        } catch (error) {
+            logger.error('Erreur édition description bot:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
+        }
+    }
+
+    // Gérer les paramètres de sécurité
+    async editSecuritySettings(ctx) {
+        try {
+            if (!await this.isAdmin(ctx)) return;
+
+            const keyboard = Markup.inlineKeyboard([
+                [
+                    Markup.button.callback('🔒 Anti-Spam', 'edit_antispam'),
+                    Markup.button.callback('👥 Restrictions', 'edit_restrictions')
+                ],
+                [
+                    Markup.button.callback('🛡️ Protection', 'edit_protection'),
+                    Markup.button.callback('📝 Logs Sécurité', 'view_security_logs')
+                ],
+                [Markup.button.callback('🔙 Retour', 'admin_config')]
+            ]);
+
+            const config = await Config.findOne() || {};
+
+            let message = '🔐 Paramètres de Sécurité\n\n';
+            message += `🔒 Anti-Spam: ${config.antiSpam ? '✅' : '❌'}\n`;
+            message += `🛡️ Protection: ${config.protection ? '✅' : '❌'}\n`;
+            message += `⏳ Délai Anti-Spam: ${config.antiSpamDelay || '5'} secondes\n`;
+            message += `🔢 Max Tentatives: ${config.maxAttempts || '3'}\n`;
+
+            await ctx.reply(message, keyboard);
+        } catch (error) {
+            logger.error('Erreur édition sécurité:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
+        }
+    }
+
+    // Gérer les notifications
+    async editNotificationSettings(ctx) {
+        try {
+            if (!await this.isAdmin(ctx)) return;
+
+            const keyboard = Markup.inlineKeyboard([
+                [
+                    Markup.button.callback('📨 Notifications Admin', 'edit_admin_notifications'),
+                    Markup.button.callback('📱 Notifications Push', 'edit_push_notifications')
+                ],
+                [
+                    Markup.button.callback('📧 Email Alerts', 'edit_email_alerts'),
+                    Markup.button.callback('🔔 Alertes Système', 'edit_system_alerts')
+                ],
+                [Markup.button.callback('🔙 Retour', 'admin_config')]
+            ]);
+
+            const config = await Config.findOne() || {};
+
+            let message = '📨 Paramètres des Notifications\n\n';
+            message += `📨 Notifications Admin: ${config.adminNotifications ? '✅' : '❌'}\n`;
+            message += `📱 Notifications Push: ${config.pushNotifications ? '✅' : '❌'}\n`;
+            message += `📧 Email Alerts: ${config.emailAlerts ? '✅' : '❌'}\n`;
+            message += `🔔 Alertes Système: ${config.systemAlerts ? '✅' : '❌'}\n`;
+
+            await ctx.reply(message, keyboard);
+        } catch (error) {
+            logger.error('Erreur édition notifications:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
+        }
+    }
+
+    // Gérer les logs
+    async viewLogs(ctx) {
+        try {
+            if (!await this.isAdmin(ctx)) return;
+
+            const keyboard = Markup.inlineKeyboard([
+                [
+                    Markup.button.callback('🔍 Erreurs', 'view_error_logs'),
+                    Markup.button.callback('👥 Actions Admin', 'view_admin_logs')
+                ],
+                [
+                    Markup.button.callback('💳 Transactions', 'view_transaction_logs'),
+                    Markup.button.callback('🔐 Sécurité', 'view_security_logs')
+                ],
+                [
+                    Markup.button.callback('📥 Télécharger', 'download_logs'),
+                    Markup.button.callback('🗑️ Nettoyer', 'clear_logs')
+                ],
+                [Markup.button.callback('🔙 Retour', 'admin_config')]
+            ]);
+
+            // Récupérer les statistiques des logs
+            const errorCount = await AdminLog.countDocuments({ type: 'error' });
+            const adminCount = await AdminLog.countDocuments({ type: 'admin' });
+            const transactionCount = await AdminLog.countDocuments({ type: 'transaction' });
+            const securityCount = await AdminLog.countDocuments({ type: 'security' });
+
+            let message = '📝 Gestion des Logs\n\n';
+            message += `🔍 Erreurs: ${errorCount} entrées\n`;
+            message += `👥 Actions Admin: ${adminCount} entrées\n`;
+            message += `💳 Transactions: ${transactionCount} entrées\n`;
+            message += `🔐 Sécurité: ${securityCount} entrées\n`;
+
+            await ctx.reply(message, keyboard);
+        } catch (error) {
+            logger.error('Erreur affichage logs:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
+        }
+    }
+
+    // Gérer les backups
+    async manageBackup(ctx) {
+        try {
+            if (!await this.isAdmin(ctx)) return;
+
+            const keyboard = Markup.inlineKeyboard([
+                [
+                    Markup.button.callback('📥 Créer Backup', 'create_backup'),
+                    Markup.button.callback('📤 Restaurer', 'restore_backup')
+                ],
+                [
+                    Markup.button.callback('📋 Liste Backups', 'list_backups'),
+                    Markup.button.callback('⚙️ Params Backup', 'backup_settings')
+                ],
+                [Markup.button.callback('🔙 Retour', 'admin_config')]
+            ]);
+
+            // Récupérer les informations sur les backups
+            const backupDir = path.join(__dirname, '../backups');
+            const files = await fs.readdir(backupDir);
+            const backups = files.filter(f => f.endsWith('.zip'));
+            
+            let message = '🔄 Gestion des Sauvegardes\n\n';
+            message += `📊 Total backups: ${backups.length}\n`;
+            if (backups.length > 0) {
+                const latestBackup = backups[backups.length - 1];
+                const stats = await fs.stat(path.join(backupDir, latestBackup));
+                message += `📅 Dernier backup: ${stats.mtime.toLocaleString()}\n`;
+                message += `📦 Taille: ${(stats.size / 1024 / 1024).toFixed(2)} MB\n`;
+            }
+
+            await ctx.reply(message, keyboard);
+        } catch (error) {
+            logger.error('Erreur gestion backup:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
+        }
+    }
+
+    // Créer un backup
+    async createNewBackup(ctx) {
+        try {
+            if (!await this.isAdmin(ctx)) return;
+
+            // Notifier le début du backup
+            await ctx.reply('🔄 Création de la sauvegarde en cours...');
+
+            // Créer le backup
+            const backupPath = await this.createBackup();
+
+            // Envoyer le fichier de backup
+            await ctx.replyWithDocument({
+                source: backupPath,
+                filename: `backup_${new Date().toISOString()}.zip`
+            });
+
+            await ctx.reply('✅ Sauvegarde créée avec succès');
+        } catch (error) {
+            logger.error('Erreur création backup:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
+        }
+    }
+
+    // Gérer les rôles administratifs
+    async manageAdminRoles(ctx) {
+        try {
+            if (!await this.isAdmin(ctx)) return;
+
+            const keyboard = Markup.inlineKeyboard([
+                [
+                    Markup.button.callback('➕ Ajouter Admin', 'add_admin'),
+                    Markup.button.callback('👥 Liste Admins', 'list_admins')
+                ],
+                [
+                    Markup.button.callback('🔐 Permissions', 'edit_permissions'),
+                    Markup.button.callback('📋 Rôles', 'manage_roles')
+                ],
+                [Markup.button.callback('🔙 Retour', 'admin_config')]
+            ]);
+
+            // Récupérer la liste des admins
+            const admins = await User.find({
+                role: { $in: ['admin', 'superadmin'] }
+            });
+
+            let message = '👥 Gestion des Rôles Administratifs\n\n';
+            message += `👑 Super Admins: ${admins.filter(a => a.role === 'superadmin').length}\n`;
+            message += `🔧 Admins: ${admins.filter(a => a.role === 'admin').length}\n\n`;
+
+            if (admins.length > 0) {
+                message += '📋 Liste des administrateurs:\n';
+                admins.forEach(admin => {
+                    message += `@${admin.username} - ${admin.role}\n`;
+                });
+            }
+
+            await ctx.reply(message, keyboard);
+        } catch (error) {
+            logger.error('Erreur gestion rôles:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
+        }
+    }
+
+    // Ajouter un administrateur
+    async addAdmin(ctx) {
+        try {
+            if (!await this.isAdmin(ctx)) return;
+
+            ctx.session.adminState = {
+                action: 'add_admin'
+            };
+
+            await ctx.reply(
+                '👤 Entrez le nom d\'utilisateur (sans @) ou l\'ID Telegram du nouvel administrateur:'
+            );
+        } catch (error) {
+            logger.error('Erreur ajout admin:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
+        }
+    }
+
+    // Gérer l'ajout d'un administrateur
+    async handleAddAdmin(ctx) {
+        try {
+            const input = ctx.message.text;
+            let user;
+
+            // Rechercher l'utilisateur
+            if (input.match(/^\d+$/)) {
+                user = await User.findOne({ telegramId: input });
+            } else {
+                user = await User.findOne({ username: input });
+            }
+
+            if (!user) {
+                return ctx.reply('❌ Utilisateur non trouvé');
+            }
+
+            // Vérifier si l'utilisateur est déjà admin
+            if (user.role === 'admin' || user.role === 'superadmin') {
+                return ctx.reply('❌ Cet utilisateur est déjà administrateur');
+            }
+
+            // Promouvoir l'utilisateur
+            user.role = 'admin';
+            await user.save();
+
+            // Notifier le nouvel admin
+            await this.bot.telegram.sendMessage(
+                user.telegramId,
+                '🎉 Félicitations! Vous avez été promu administrateur.'
+            );
+
+            // Logger l'action
+            await this.logAdminAction(ctx.from.id, 'add_admin', {
+                target: user.username,
+                targetId: user.telegramId
+            });
+
+            this.clearAdminState(ctx);
+            await ctx.reply(`✅ @${user.username} a été promu administrateur`);
+            await this.manageAdminRoles(ctx);
+        } catch (error) {
+            logger.error('Erreur traitement ajout admin:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
+        }
+    }
+
+    // Gérer les paramètres API
+    async manageApiSettings(ctx) {
+        try {
+            if (!await this.isAdmin(ctx)) return;
+
+            const keyboard = Markup.inlineKeyboard([
+                [
+                    Markup.button.callback('🔑 Clés API', 'manage_api_keys'),
+                    Markup.button.callback('🔒 Sécurité API', 'api_security')
+                ],
+                [
+                    Markup.button.callback('📊 Quotas', 'api_quotas'),
+                    Markup.button.callback('📝 Logs API', 'api_logs')
+                ],
+                [Markup.button.callback('🔙 Retour', 'admin_config')]
+            ]);
+
+            const config = await Config.findOne() || {};
+
+            let message = '🌐 Gestion de l\'API\n\n';
+            message += `🔑 Clés actives: ${config.apiKeys?.length || 0}\n`;
+            message += `📊 Quota par défaut: ${config.defaultApiQuota || 1000} requêtes/jour\n`;
+            message += `⏱️ Rate Limit: ${config.apiRateLimit || 60} requêtes/minute\n`;
+
+            await ctx.reply(message, keyboard);
+        } catch (error) {
+            logger.error('Erreur gestion API:', error);
+            ctx.reply('Une erreur est survenue').catch(console.error);
+        }
+    }
+
+    // États et session
+    clearAdminState(ctx) {
+        if (ctx.session.adminState) {
+            delete ctx.session.adminState;
+        }
+    }
+
+    // Utilitaires
+    getStatusEmoji(status) {
+        const statusEmojis = {
+            'pending': '⏳',
+            'processing': '🔄',
+            'completed': '✅',
+            'delivered': '📦',
+            'cancelled': '❌',
+            'refunded': '💰',
+            'rejected': '⛔',
+            'failed': '⚠️'
+        };
+        return statusEmojis[status] || '❓';
+    }
+
+    async logAdminAction(adminId, action, details) {
+        try {
+            const admin = await User.findOne({ telegramId: adminId });
+            await AdminLog.create({
+                adminId,
+                action,
+                details,
+                timestamp: new Date()
+            });
+
+            logger.info('Action administrative:', {
+                admin: admin.username,
+                action,
+                details
+            });
+        } catch (error) {
+            logger.error('Erreur logging action:', error);
+        }
+    }
+
+    // Création de backup
+    async createBackup() {
+        try {
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const backupPath = path.join(__dirname, `../backups/backup_${timestamp}`);
+            await fs.mkdir(backupPath, { recursive: true });
+
+            // Sauvegarde des collections
+            const collections = ['users', 'orders', 'products', 'categories', 'transactions'];
+            for (const collection of collections) {
+                const data = await mongoose.connection.db
+                    .collection(collection)
+                    .find({})
+                    .toArray();
+
+                await fs.writeFile(
+                    path.join(backupPath, `${collection}.json`),
+                    JSON.stringify(data, null, 2)
+                );
+            }
+
+            // Créer une archive ZIP
+            const zipPath = `${backupPath}.zip`;
+            // Code pour créer le ZIP...
+
+            return zipPath;
+        } catch (error) {
+            logger.error('Erreur création backup:', error);
+            throw error;
+        }
+    }
+}
+
+module.exports = AdminController;

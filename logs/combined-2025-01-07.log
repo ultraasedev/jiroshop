@@ -1,0 +1,153 @@
+2025-01-07 09:28:42 [INFO]: MongoDB connecté | {"metadata":{}}
+2025-01-07 09:28:42 [INFO]: Base de données connectée | {"metadata":{}}
+2025-01-07 09:28:42 [INFO]: Middlewares configurés | {"metadata":{}}
+2025-01-07 09:28:42 [INFO]: BotController initialisé | {"metadata":{}}
+2025-01-07 09:28:42 [INFO]: AdminController initialisé | {"metadata":{}}
+2025-01-07 09:28:42 [INFO]: PaymentController initialisé | {"metadata":{}}
+2025-01-07 09:28:42 [INFO]: OrderController initialisé | {"metadata":{}}
+2025-01-07 09:28:42 [INFO]: Tâches périodiques de commandes démarrées | {"metadata":{}}
+2025-01-07 09:28:42 [INFO]: Contrôleurs initialisés avec succès | {"metadata":{}}
+2025-01-07 09:28:42 [INFO]: Commandes administrateur configurées | {"metadata":{}}
+2025-01-07 09:28:42 [INFO]: Gestion des erreurs configurée | {"metadata":{}}
+2025-01-07 09:28:42 [INFO]: Commandes enregistrées: | {"metadata":{}}
+2025-01-07 09:48:17 [INFO]: MongoDB connecté | {"metadata":{}}
+2025-01-07 09:48:17 [INFO]: Base de données connectée | {"metadata":{}}
+2025-01-07 09:48:17 [INFO]: Middlewares configurés | {"metadata":{}}
+2025-01-07 09:48:17 [INFO]: BotController initialisé | {"metadata":{}}
+2025-01-07 09:48:17 [INFO]: AdminController initialisé | {"metadata":{}}
+2025-01-07 09:48:17 [INFO]: PaymentController initialisé | {"metadata":{}}
+2025-01-07 09:48:17 [INFO]: OrderController initialisé | {"metadata":{}}
+2025-01-07 09:48:17 [INFO]: Tâches périodiques de commandes démarrées | {"metadata":{}}
+2025-01-07 09:48:17 [INFO]: Contrôleurs initialisés avec succès | {"metadata":{}}
+2025-01-07 09:48:17 [INFO]: Commandes administrateur configurées | {"metadata":{}}
+2025-01-07 09:48:17 [INFO]: Gestion des erreurs configurée | {"metadata":{}}
+2025-01-07 09:48:18 [INFO]: Commandes enregistrées: | {"metadata":{}}
+2025-01-07 09:48:58 [ERROR]: Erreur détectée: | {"metadata":{"error":{"name":"Unknown","message":"No message"},"context":{}}}
+2025-01-07 09:49:02 [ERROR]: Erreur détectée: | {"metadata":{"error":{"name":"Unknown","message":"No message"},"context":{}}}
+2025-01-07 09:50:34 [ERROR]: Erreur détectée: | {"metadata":{"error":{"name":"Unknown","message":"No message"},"context":{}}}
+2025-01-07 09:52:05 [INFO]: MongoDB connecté | {"metadata":{}}
+2025-01-07 09:52:05 [INFO]: Base de données connectée | {"metadata":{}}
+2025-01-07 09:52:05 [INFO]: Middlewares configurés | {"metadata":{}}
+2025-01-07 09:52:05 [INFO]: BotController initialisé | {"metadata":{}}
+2025-01-07 09:52:05 [INFO]: AdminController initialisé | {"metadata":{}}
+2025-01-07 09:52:05 [INFO]: PaymentController initialisé | {"metadata":{}}
+2025-01-07 09:52:05 [INFO]: OrderController initialisé | {"metadata":{}}
+2025-01-07 09:52:05 [INFO]: Tâches périodiques de commandes démarrées | {"metadata":{}}
+2025-01-07 09:52:05 [INFO]: Contrôleurs initialisés avec succès | {"metadata":{}}
+2025-01-07 09:52:05 [INFO]: Commandes administrateur configurées | {"metadata":{}}
+2025-01-07 09:52:05 [INFO]: Gestion des erreurs configurée | {"metadata":{}}
+2025-01-07 09:52:05 [INFO]: Commandes enregistrées: | {"metadata":{}}
+2025-01-07 09:52:18 [ERROR]: Erreur détectée: | {"metadata":{"error":{"name":"Unknown","message":"No message"},"context":{}}}
+2025-01-07 10:05:15 [INFO]: MongoDB connecté | {"metadata":{}}
+2025-01-07 10:05:15 [INFO]: Base de données connectée | {"metadata":{}}
+2025-01-07 10:05:15 [INFO]: Middlewares configurés | {"metadata":{}}
+2025-01-07 10:05:15 [INFO]: BotController initialisé | {"metadata":{}}
+2025-01-07 10:05:15 [INFO]: AdminController initialisé | {"metadata":{}}
+2025-01-07 10:05:15 [INFO]: PaymentController initialisé | {"metadata":{}}
+2025-01-07 10:05:15 [INFO]: OrderController initialisé | {"metadata":{}}
+2025-01-07 10:05:15 [INFO]: Tâches périodiques de commandes démarrées | {"metadata":{}}
+2025-01-07 10:05:15 [INFO]: Contrôleurs initialisés avec succès | {"metadata":{}}
+2025-01-07 10:05:15 [INFO]: Commandes administrateur configurées | {"metadata":{}}
+2025-01-07 10:05:15 [INFO]: Gestion des erreurs configurée | {"metadata":{}}
+2025-01-07 10:05:16 [INFO]: Commandes enregistrées: | {"metadata":{}}
+2025-01-07 10:05:53 [ERROR]: Erreur détectée: | {"metadata":{"error":{"name":"Unknown","message":"No message"},"context":{}}}
+2025-01-07 10:06:15 [INFO]: MongoDB connecté | {"metadata":{}}
+2025-01-07 10:06:15 [INFO]: Base de données connectée | {"metadata":{}}
+2025-01-07 10:06:15 [INFO]: Middlewares configurés | {"metadata":{}}
+2025-01-07 10:06:15 [INFO]: BotController initialisé | {"metadata":{}}
+2025-01-07 10:06:15 [INFO]: AdminController initialisé | {"metadata":{}}
+2025-01-07 10:06:15 [INFO]: PaymentController initialisé | {"metadata":{}}
+2025-01-07 10:06:15 [INFO]: OrderController initialisé | {"metadata":{}}
+2025-01-07 10:06:15 [INFO]: Tâches périodiques de commandes démarrées | {"metadata":{}}
+2025-01-07 10:06:15 [INFO]: Contrôleurs initialisés avec succès | {"metadata":{}}
+2025-01-07 10:06:15 [INFO]: Commandes administrateur configurées | {"metadata":{}}
+2025-01-07 10:06:15 [INFO]: Gestion des erreurs configurée | {"metadata":{}}
+2025-01-07 10:06:15 [INFO]: Commandes enregistrées: | {"metadata":{}}
+2025-01-07 10:06:26 [ERROR]: Erreur globale bot: | {"metadata":{"error":{},"context":{"updateType":"callback_query","update":{"update_id":57170133,"callback_query":{"id":"4028446540827413292","from":{"id":5232913097,"is_bot":false,"first_name":"name","last_name":"name","username":"unknowusername2","language_code":"fr"},"message":{"message_id":204,"from":{"id":7306466596,"is_bot":true,"first_name":"Jarvis","username":"ChangershopBot"},"chat":{"id":5232913097,"first_name":"name","last_name":"name","username":"unknowusername2","type":"private"},"date":1736240780,"text":"⚙️ Configuration\n\n🤖 Nom du bot: Non défini\n🌐 Langue: FR\n⏰ Fuseau horaire: Europe/Paris\n🔒 Mode maintenance: ❌\n🔄 Version: 1.0.0\n📅 Dernière mise à jour: Jamais","reply_markup":{"inline_keyboard":[[{"text":"🤖 Bot","callback_data":"edit_bot_settings"},{"text":"🔒 Sécurité","callback_data":"edit_security_settings"}],[{"text":"🔔 Notifications","callback_data":"edit_notification_settings"},{"text":"💳 Paiements","callback_data":"edit_payment_settings"}],[{"text":"💾 Backup","callback_data":"manage_backup"},{"text":"📝 Logs","callback_data":"view_logs"}],[{"text":"👥 Rôles Admin","callback_data":"manage_admin_roles"},{"text":"🔌 API","callback_data":"manage_api_settings"}],[{"text":"🔙 Retour","callback_data":"admin_panel"}]]}},"chat_instance":"8237849111858201936","data":"edit_notification_settings"}},"from":{"id":5232913097,"is_bot":false,"first_name":"name","last_name":"name","username":"unknowusername2","language_code":"fr"},"chat":{"id":5232913097,"first_name":"name","last_name":"name","username":"unknowusername2","type":"private"}}}}
+2025-01-07 10:15:15 [INFO]: MongoDB connecté | {"metadata":{}}
+2025-01-07 10:15:15 [INFO]: Base de données connectée | {"metadata":{}}
+2025-01-07 10:15:15 [INFO]: Middlewares configurés | {"metadata":{}}
+2025-01-07 10:15:15 [INFO]: BotController initialisé | {"metadata":{}}
+2025-01-07 10:15:15 [INFO]: AdminController initialisé | {"metadata":{}}
+2025-01-07 10:15:15 [INFO]: PaymentController initialisé | {"metadata":{}}
+2025-01-07 10:15:15 [INFO]: OrderController initialisé | {"metadata":{}}
+2025-01-07 10:15:15 [INFO]: Tâches périodiques de commandes démarrées | {"metadata":{}}
+2025-01-07 10:15:15 [INFO]: Contrôleurs initialisés avec succès | {"metadata":{}}
+2025-01-07 10:15:15 [INFO]: Commandes administrateur configurées | {"metadata":{}}
+2025-01-07 10:15:15 [INFO]: Gestion des erreurs configurée | {"metadata":{}}
+2025-01-07 10:15:15 [INFO]: Commandes enregistrées: | {"metadata":{}}
+2025-01-07 10:20:32 [INFO]: MongoDB connecté | {"metadata":{}}
+2025-01-07 10:20:32 [INFO]: Base de données connectée | {"metadata":{}}
+2025-01-07 10:20:32 [INFO]: Middlewares configurés | {"metadata":{}}
+2025-01-07 10:20:32 [INFO]: BotController initialisé | {"metadata":{}}
+2025-01-07 10:20:32 [INFO]: AdminController initialisé | {"metadata":{}}
+2025-01-07 10:20:32 [INFO]: PaymentController initialisé | {"metadata":{}}
+2025-01-07 10:20:32 [INFO]: OrderController initialisé | {"metadata":{}}
+2025-01-07 10:20:32 [INFO]: Tâches périodiques de commandes démarrées | {"metadata":{}}
+2025-01-07 10:20:32 [INFO]: Contrôleurs initialisés avec succès | {"metadata":{}}
+2025-01-07 10:20:32 [INFO]: Commandes administrateur configurées | {"metadata":{}}
+2025-01-07 10:20:32 [INFO]: Gestion des erreurs configurée | {"metadata":{}}
+2025-01-07 10:20:33 [INFO]: Commandes enregistrées: | {"metadata":{}}
+2025-01-07 10:22:03 [INFO]: MongoDB connecté | {"metadata":{}}
+2025-01-07 10:22:03 [INFO]: Base de données connectée | {"metadata":{}}
+2025-01-07 10:22:03 [INFO]: Middlewares configurés | {"metadata":{}}
+2025-01-07 10:22:03 [INFO]: BotController initialisé | {"metadata":{}}
+2025-01-07 10:22:03 [INFO]: AdminController initialisé | {"metadata":{}}
+2025-01-07 10:22:03 [INFO]: PaymentController initialisé | {"metadata":{}}
+2025-01-07 10:22:03 [INFO]: OrderController initialisé | {"metadata":{}}
+2025-01-07 10:22:03 [INFO]: Tâches périodiques de commandes démarrées | {"metadata":{}}
+2025-01-07 10:22:03 [INFO]: Contrôleurs initialisés avec succès | {"metadata":{}}
+2025-01-07 10:22:03 [INFO]: Commandes administrateur configurées | {"metadata":{}}
+2025-01-07 10:22:03 [INFO]: Gestion des erreurs configurée | {"metadata":{}}
+2025-01-07 10:22:03 [INFO]: Commandes enregistrées: | {"metadata":{}}
+2025-01-07 11:07:47 [INFO]: Traductions chargées avec succès | {"metadata":{}}
+2025-01-07 11:07:48 [INFO]: MongoDB connecté | {"metadata":{}}
+2025-01-07 11:07:48 [INFO]: Base de données connectée | {"metadata":{}}
+2025-01-07 11:07:48 [INFO]: Middlewares configurés | {"metadata":{}}
+2025-01-07 11:07:48 [INFO]: BotController initialisé | {"metadata":{}}
+2025-01-07 11:07:48 [INFO]: AdminController initialisé | {"metadata":{}}
+2025-01-07 11:07:48 [INFO]: PaymentController initialisé | {"metadata":{}}
+2025-01-07 11:07:48 [INFO]: OrderController initialisé | {"metadata":{}}
+2025-01-07 11:07:48 [INFO]: Tâches périodiques de commandes démarrées | {"metadata":{}}
+2025-01-07 11:07:48 [INFO]: Contrôleurs initialisés avec succès | {"metadata":{}}
+2025-01-07 11:07:48 [INFO]: Commandes administrateur configurées | {"metadata":{}}
+2025-01-07 11:07:48 [INFO]: Gestion des erreurs configurée | {"metadata":{}}
+2025-01-07 11:07:48 [INFO]: Commandes enregistrées: | {"metadata":{}}
+2025-01-07 11:07:58 [INFO]: Langue par défaut changée pour: fr | {"metadata":{}}
+2025-01-07 11:08:07 [INFO]: Langue par défaut changée pour: fr | {"metadata":{}}
+2025-01-07 11:08:16 [INFO]: Langue par défaut changée pour: fr | {"metadata":{}}
+2025-01-07 11:09:49 [INFO]: Langue par défaut changée pour: fr | {"metadata":{}}
+2025-01-07 11:09:54 [ERROR]: Erreur détectée: | {"metadata":{"error":{"name":"Unknown","message":"No message"},"context":{}}}
+2025-01-07 11:10:09 [INFO]: Langue par défaut changée pour: fr | {"metadata":{}}
+2025-01-07 11:18:11 [INFO]: Traductions chargées avec succès | {"metadata":{}}
+2025-01-07 11:18:11 [INFO]: MongoDB connecté | {"metadata":{}}
+2025-01-07 11:18:11 [INFO]: Base de données connectée | {"metadata":{}}
+2025-01-07 11:18:11 [INFO]: Middlewares configurés | {"metadata":{}}
+2025-01-07 11:18:11 [INFO]: BotController initialisé | {"metadata":{}}
+2025-01-07 11:18:11 [INFO]: AdminController initialisé | {"metadata":{}}
+2025-01-07 11:18:11 [INFO]: PaymentController initialisé | {"metadata":{}}
+2025-01-07 11:18:11 [INFO]: OrderController initialisé | {"metadata":{}}
+2025-01-07 11:18:11 [INFO]: Tâches périodiques de commandes démarrées | {"metadata":{}}
+2025-01-07 11:18:11 [INFO]: Contrôleurs initialisés avec succès | {"metadata":{}}
+2025-01-07 11:18:11 [INFO]: Commandes administrateur configurées | {"metadata":{}}
+2025-01-07 11:18:11 [INFO]: Gestion des erreurs configurée | {"metadata":{}}
+2025-01-07 11:18:12 [INFO]: Commandes enregistrées: | {"metadata":{}}
+2025-01-07 11:18:23 [INFO]: Langue par défaut changée pour: fr | {"metadata":{}}
+2025-01-07 11:18:24 [ERROR]: Erreur détectée: | {"metadata":{"error":{"name":"Unknown","message":"No message"},"context":{}}}
+2025-01-07 11:23:34 [INFO]: Traductions chargées avec succès | {"metadata":{}}
+2025-01-07 11:23:34 [INFO]: MongoDB connecté | {"metadata":{}}
+2025-01-07 11:23:34 [INFO]: Base de données connectée | {"metadata":{}}
+2025-01-07 11:23:34 [INFO]: Middlewares configurés | {"metadata":{}}
+2025-01-07 11:23:34 [INFO]: BotController initialisé | {"metadata":{}}
+2025-01-07 11:23:34 [INFO]: AdminController initialisé | {"metadata":{}}
+2025-01-07 11:23:34 [INFO]: PaymentController initialisé | {"metadata":{}}
+2025-01-07 11:23:34 [INFO]: OrderController initialisé | {"metadata":{}}
+2025-01-07 11:23:34 [INFO]: Tâches périodiques de commandes démarrées | {"metadata":{}}
+2025-01-07 11:23:34 [INFO]: Contrôleurs initialisés avec succès | {"metadata":{}}
+2025-01-07 11:23:34 [INFO]: Commandes administrateur configurées | {"metadata":{}}
+2025-01-07 11:23:34 [INFO]: Gestion des erreurs configurée | {"metadata":{}}
+2025-01-07 11:23:34 [INFO]: Commandes enregistrées: | {"metadata":{}}
+2025-01-07 11:23:40 [INFO]: Langue par défaut changée pour: fr | {"metadata":{}}
+2025-01-07 11:23:46 [INFO]: Langue par défaut changée pour: fr | {"metadata":{}}
+2025-01-07 11:23:52 [ERROR]: Erreur détectée: | {"metadata":{"error":{"name":"Unknown","message":"No message"},"context":{}}}
+2025-01-07 11:23:55 [ERROR]: Erreur détectée: | {"metadata":{"error":{"name":"Unknown","message":"No message"},"context":{}}}

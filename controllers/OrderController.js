@@ -15,32 +15,82 @@ class OrderController {
     }
 
     initializeOrderHandlers() {
-        // Gestionnaire des commandes de base
-        this.bot.command('checkout', this.startCheckout.bind(this));
-        this.bot.command('orders', this.showUserOrders.bind(this));
+          // Gestionnaire des commandes de base
+    this.bot.command('checkout', (ctx) => this.startCheckout(ctx));
+    this.bot.command('orders', (ctx) => this.showUserOrders(ctx));
 
-        // Gestionnaire des actions de boutique
-        this.bot.action('view_cart', this.viewCart.bind(this));
-        this.bot.action('start_purchase', this.startPurchase.bind(this));
-        this.bot.action(/^select_payment_(.+)$/, this.selectPayment.bind(this));
+    // Gestionnaire des actions de boutique
+    this.bot.action('view_cart', (ctx) => this.viewCart(ctx));
+    this.bot.action('start_purchase', (ctx) => this.startPurchase(ctx));
+    this.bot.action(/^select_payment_(.+)$/, (ctx) => this.selectPayment(ctx));
 
-        // Gestionnaire des commandes
-        this.bot.action(/^view_order_(.+)$/, this.viewOrderDetails.bind(this));
-        this.bot.action(/^track_order_(.+)$/, this.trackOrder.bind(this));
-        this.bot.action(/^cancel_order_(.+)$/, this.cancelOrder.bind(this));
+    // Gestionnaire des commandes
+    this.bot.action(/^view_order_(.+)$/, (ctx) => this.viewOrderDetails(ctx));
+    this.bot.action(/^track_order_(.+)$/, (ctx) => this.trackOrder(ctx));
+    this.bot.action(/^cancel_order_(.+)$/, (ctx) => this.cancelOrder(ctx));
 
-        // Gestionnaire des paiements
-        this.bot.action(/^pay_order_(.+)$/, this.handlePayment.bind(this));
-        this.bot.action(/^confirm_payment_(.+)$/, this.confirmPayment.bind(this));
-        this.bot.action(/^reject_payment_(.+)$/, this.rejectPayment.bind(this));
+    // Gestionnaire des paiements
+    this.bot.action(/^pay_order_(.+)$/, (ctx) => this.handlePayment(ctx));
+    this.bot.action(/^confirm_payment_(.+)$/, (ctx) => this.confirmPayment(ctx));
+    this.bot.action(/^reject_payment_(.+)$/, (ctx) => this.rejectPayment(ctx));
 
-        // Gestionnaire des documents et photos
-        this.bot.on('document', this.handleDocument.bind(this));
-        this.bot.on('photo', this.handlePhoto.bind(this));
+    // Gestionnaire des documents et photos
+    this.bot.on('document', (ctx) => this.handleDocument(ctx));
+    this.bot.on('photo', (ctx) => this.handlePhoto(ctx));
 
-        // Gestionnaire des conversations
-        this.bot.on('message', this.handleOrderMessage.bind(this));
-        this.bot.on('channel_post', this.handleChannelPost.bind(this));
+    // Gestionnaire des conversations
+    this.bot.on('message', (ctx) => this.handleOrderMessage(ctx));
+    this.bot.on('channel_post', (ctx) => this.handleChannelPost(ctx));
+
+    // Actions supplémentaires
+    this.bot.action(/^approve_order_(.+)$/, (ctx) => this.approveOrder(ctx));
+    this.bot.action(/^reject_order_(.+)$/, (ctx) => this.rejectOrder(ctx));
+    this.bot.action(/^deliver_order_(.+)$/, (ctx) => this.markOrderAsDelivered(ctx));
+    this.bot.action(/^complete_order_(.+)$/, (ctx) => this.completeOrder(ctx));
+
+    // Actions de paiement supplémentaires
+    this.bot.action(/^verify_payment_(.+)$/, (ctx) => this.verifyPayment(ctx));
+    this.bot.action(/^refund_order_(.+)$/, (ctx) => this.refundOrder(ctx));
+
+    // Gestion des notes et modifications
+    this.bot.action(/^add_order_note_(.+)$/, (ctx) => this.addOrderNote(ctx));
+    this.bot.action(/^edit_order_(.+)$/, (ctx) => this.editOrder(ctx));
+
+    // Filtres et recherche
+    this.bot.action('filter_orders', (ctx) => this.showOrderFilters(ctx));
+    this.bot.action('search_orders', (ctx) => this.searchOrders(ctx));
+    this.bot.action(/^filter_status_(.+)$/, (ctx) => this.filterByStatus(ctx));
+    this.bot.action(/^filter_date_(.+)$/, (ctx) => this.filterByDate(ctx));
+
+    // Navigation et pagination
+    this.bot.action(/^order_page_(.+)$/, (ctx) => this.handleOrderPagination(ctx));
+    this.bot.action('back_to_orders', (ctx) => this.backToOrders(ctx));
+
+    // Statistiques et rapports
+    this.bot.action('order_stats', (ctx) => this.showOrderStats(ctx));
+    this.bot.action('order_report', (ctx) => this.generateOrderReport(ctx));
+    this.bot.action('export_orders', (ctx) => this.exportOrders(ctx));
+
+    // Communication client
+    this.bot.action(/^contact_customer_(.+)$/, (ctx) => this.contactCustomer(ctx));
+    this.bot.action(/^send_reminder_(.+)$/, (ctx) => this.sendReminder(ctx));
+
+    // Actions sur les produits de la commande
+    this.bot.action(/^view_order_product_(.+)$/, (ctx) => this.viewOrderProduct(ctx));
+    this.bot.action(/^update_order_quantity_(.+)$/, (ctx) => this.updateOrderQuantity(ctx));
+
+    // Gestion des retours et remboursements
+    this.bot.action(/^initiate_return_(.+)$/, (ctx) => this.initiateReturn(ctx));
+    this.bot.action(/^process_refund_(.+)$/, (ctx) => this.processRefund(ctx));
+
+    // Actions administratives
+    this.bot.action(/^assign_order_(.+)$/, (ctx) => this.assignOrder(ctx));
+    this.bot.action(/^escalate_order_(.+)$/, (ctx) => this.escalateOrder(ctx));
+    this.bot.action(/^mark_priority_(.+)$/, (ctx) => this.markOrderPriority(ctx));
+
+    // Workflow de livraison
+    this.bot.action(/^update_tracking_(.+)$/, (ctx) => this.updateTracking(ctx));
+    this.bot.action(/^confirm_delivery_(.+)$/, (ctx) => this.confirmDelivery(ctx));
     }
 
     // Démarrer une nouvelle commande
@@ -714,6 +764,71 @@ class OrderController {
         } catch (error) {
             logger.error('Erreur notification admins:', error);
         }
+    }
+    startPeriodicTasks() {
+        // Vérifier les commandes en attente toutes les 15 minutes
+        setInterval(async () => {
+            try {
+                const pendingOrders = await Order.find({
+                    status: 'pending',
+                    createdAt: { 
+                        $lt: new Date(Date.now() - 30 * 60 * 1000) // 30 minutes
+                    }
+                });
+    
+                for (const order of pendingOrders) {
+                    await this.notifyAdmins(
+                        `⚠️ Commande en attente depuis 30 minutes\n` +
+                        `#${order.orderNumber} - @${order.user.username}`
+                    );
+                }
+            } catch (error) {
+                logger.error('Erreur surveillance commandes en attente:', error);
+            }
+        }, 15 * 60 * 1000); // 15 minutes
+    
+        // Vérifier les commandes expirées toutes les heures
+        setInterval(async () => {
+            try {
+                const expiredOrders = await Order.find({
+                    status: 'pending',
+                    createdAt: { 
+                        $lt: new Date(Date.now() - 24 * 60 * 60 * 1000) // 24 heures
+                    }
+                });
+    
+                for (const order of expiredOrders) {
+                    await order.updateStatus('cancelled', 'Commande expirée automatiquement');
+                    await this.bot.telegram.sendMessage(
+                        order.user.id,
+                        `⌛ Votre commande ${order.orderNumber} a expiré automatiquement.`
+                    );
+                }
+            } catch (error) {
+                logger.error('Erreur nettoyage commandes expirées:', error);
+            }
+        }, 60 * 60 * 1000); // 1 heure
+    
+        // Surveillance des messages non lus toutes les 30 minutes
+        setInterval(async () => {
+            try {
+                const unreadOrders = await Order.find({
+                    'conversation.unreadCount': { $gt: 0 },
+                    status: { $in: ['processing', 'ready', 'pending'] }
+                });
+    
+                for (const order of unreadOrders) {
+                    await this.notifyAdmins(
+                        `📨 Messages non lus dans la commande #${order.orderNumber}\n` +
+                        `Client: @${order.user.username}`
+                    );
+                }
+            } catch (error) {
+                logger.error('Erreur surveillance messages non lus:', error);
+            }
+        }, 30 * 60 * 1000); // 30 minutes
+    
+        logger.info('Tâches périodiques de commandes démarrées');
     }
 }
 
